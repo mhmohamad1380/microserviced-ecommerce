@@ -7,6 +7,9 @@ from .paginations import ProductPagination
 from .models import Product
 from django.db.models import F, Q
 from .utils import get_user_token
+from rest_framework.decorators import api_view
+import json
+
 
 class ProductAPIView(APIView):
     permission_classes = [IsAuthenticatedCustom]
@@ -89,3 +92,27 @@ class ProductAPIView(APIView):
         ) 
 
 
+@api_view(["POST"])
+def validate_product(request):
+    required_fields = ["product-id", "detail-index", "count"]
+
+    if not all(field in request.headers for field in required_fields):
+        return Response({"message": f"Please Provide all required Fields: {required_fields}"}, status=status.HTTP_400_BAD_REQUEST)
+
+    product_id = request.headers.get("product-id")
+    detail_index = request.headers.get("detail-index")
+    count = request.headers.get("count")
+    product = Product.objects.filter(pk=product_id)
+
+    if not product.exists():
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    product = product.first()
+    details = json.loads(product.details)
+    if len(details) < (detail_index + 1):
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    details = details[detail_index]
+    if details['count'] < count:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    return Response(status=status.HTTP_200_OK)
