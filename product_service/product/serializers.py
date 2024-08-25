@@ -7,7 +7,7 @@ def serializer_product(product_instance: Product, many: bool=False): # I did not
                 "pk": product['pk'],
                 "title": product['title'],
                 "category": {
-                    "pk": product['category_pk'],
+                    "pk": product['category_id'],
                     "title": product['category_title'],
                 },
                 "seller": product['seller'],
@@ -19,7 +19,7 @@ def serializer_product(product_instance: Product, many: bool=False): # I did not
                 "pk": product_instance['pk'],
                 "title": product_instance['title'],
                 "category": {
-                    "pk": product_instance['category_pk'],
+                    "pk": product_instance['category_id'],
                     "title": product_instance['category_title'],
                 },
                 "seller": product_instance['seller'],
