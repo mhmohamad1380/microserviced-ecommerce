@@ -17,6 +17,15 @@ class ProductAPIView(APIView):
     required_fields = ['title', "category", "details"]
 
     def get(self, request):
+        if "product-id" in request.headers:
+            product_id = request.headers["product-id"]
+            product = Product.objects.select_related("category").filter(Q(pk=product_id))
+            if not product.exists():
+                return Response({"message": "this Product does not exist!"}, status=status.HTTP_404_NOT_FOUND)
+            product = product.first()
+            serialize = serializer_product(product, many=False)
+            return Response(serialize, status=status.HTTP_200_OK)
+
         products = Product.objects.select_related("category").annotate(
             category_title=F("category__title")
         ).values("pk", "title", "category_id", "category_title", "seller", "details")
@@ -31,7 +40,6 @@ class ProductAPIView(APIView):
             return Response({"message": f"Please provide all required fields: {self.required_fields}"})
         
         user_id = get_user_token(request)
-        
         Product.objects.create(
             title=self.request.data.get("title"),
             category_id=self.request.data.get("category"),

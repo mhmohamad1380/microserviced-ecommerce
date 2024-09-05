@@ -1,4 +1,5 @@
 from .models import Product
+import json
 
 def serializer_product(product_instance: Product, many: bool=False): # I did not use default serializers because they are slower than these normal function I wrote!
     if many:
@@ -11,7 +12,7 @@ def serializer_product(product_instance: Product, many: bool=False): # I did not
                     "title": product['category_title'],
                 },
                 "seller": product['seller'],
-                "details": product['details']
+                "details": json.loads(product['details'])
             } for product in product_instance
         ] 
     
@@ -23,5 +24,5 @@ def serializer_product(product_instance: Product, many: bool=False): # I did not
                     "title": product_instance['category_title'],
                 },
                 "seller": product_instance['seller'],
-                "details": product_instance['details']
+                "details": json.loads(product_instance['details'])
             }

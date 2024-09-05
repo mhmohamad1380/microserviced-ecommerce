@@ -71,16 +71,16 @@ class DecodeTokenView(APIView):
         
         try:
             # Decode the JWT token to get the payload
-            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-            user_id = payload.get('user_id')
+            token = AccessToken(token)
+            user_id = token.payload['user_id']
             
             if not user_id:
                 return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
 
             # Optionally, fetch user details based on the user_id
             try:
-                user = User.objects.get(id=user_id)
-                return Response({"user_id": user.id}, status=status.HTTP_200_OK)
+                user = User.objects.get(pk=user_id)
+                return Response({"user_id": user.pk}, status=status.HTTP_200_OK)
             except User.DoesNotExist:
                 return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 

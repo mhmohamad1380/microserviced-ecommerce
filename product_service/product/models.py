@@ -10,7 +10,7 @@ class Category(models.Model):
 class Product(models.Model):
     title = models.CharField(max_length=128, blank=False, null=True)
     category = models.ForeignKey(to="Category", null=True, blank=False, on_delete=models.CASCADE)
-    seller = models.PositiveIntegerField(null=True, blank=False)
+    seller = models.UUIDField(null=True, blank=False)
     details = models.JSONField(validators=[validate_product_details])
 
     def __str__(self) -> str:
